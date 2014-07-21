@@ -19,6 +19,7 @@ Paddle = function(canvas, d, x, y) {
   self.init = function() {
     canvas = $("#paddles").getContext('2d');
     self.show();
+    return self;
   }
 
   self.show = function() {
@@ -65,7 +66,7 @@ Paddle = function(canvas, d, x, y) {
     setTimeout(function() {
       self.hide();
       self.show();
-    }, 60);
+    }, 50);
   }
 
   self.fade = function() {
@@ -95,7 +96,5 @@ Paddle = function(canvas, d, x, y) {
     );
   }
 
-  self.init();
-
-  return self;
+  return self.init();
 };

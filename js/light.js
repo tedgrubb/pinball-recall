@@ -13,6 +13,7 @@ Light = function(canvas, x, y) {
     canvas.strokeStyle = '#3a1f0a';
     canvas.fill();
     canvas.stroke();
+    return self;
   }
 
   self.glow = function(glow_speed) {
@@ -66,7 +67,5 @@ Light = function(canvas, x, y) {
     canvas.stroke();
   }
 
-  self.init();
-
-  return self;
+  return self.init();
 }

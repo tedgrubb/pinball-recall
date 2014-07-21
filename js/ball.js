@@ -16,9 +16,8 @@ Ball = function() {
       strokeStyle: "#FFFFFF",
       lineWidth: self.lineWidth
     }
+    return self;
   }
-
-  self.init();
 
   self.draw = function() {
     if (Game.path.length == self.path_index) {
@@ -58,5 +57,5 @@ Ball = function() {
     self.canvas.stroke();
   }
 
-  return self;
+  return self.init();
 };

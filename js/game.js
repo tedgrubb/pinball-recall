@@ -239,9 +239,6 @@ Game = (function() {
         current = self.path[i];
         previous = self.path[i-1];
 
-        x = pixelToCoord(current.x);
-        y = pixelToCoord(current.y);
-
         if (previous.y < current.y) {
           direction = next.x > current.x ? 0 : 1;
         } else if (previous.y > current.y) {
@@ -252,7 +249,9 @@ Game = (function() {
           direction = next.y > current.y ? 1 : 0;
         }
 
-        self.paddles['paddle_' + i] = new Paddle(canvas, direction, x, y);
+        coords = pixelsToCoords(current.x, current.y);
+
+        self.paddles['paddle_' + i] = new Paddle(canvas, direction, coords.x, coords.y);
       }
 
       // Draw distractions
@@ -289,8 +288,11 @@ Game = (function() {
     }
   }
 
-  pixelToCoord = function(pixel) {
-    return Math.floor((pixel-start_x)/grid_size);
+  pixelsToCoords = function(x, y) {
+    return {
+      x: Math.floor((x - start_x) / grid_size),
+      y: Math.floor((y - start_y) / grid_size)
+    }
   }
 
   startGame = function() {
