@@ -8,7 +8,7 @@ Mouse = (function() {
   self.target = null;
 
   // Private
-  touchables = {};
+  touchables = [];
 
   document.addEventListener("mousemove", function(event) {
     self.x = event.x;
@@ -22,15 +22,33 @@ Mouse = (function() {
       (self.y - self.offset_y)
     );
 
-    console.log(coords.x, coords.y);
+    over = false;
 
     touchables.each(function(touchable) {
-      console.log(touchable);
+      target_coords = pixelsToCoords(
+        (touchable.coords.x),
+        (touchable.coords.y)
+      );
+      if(coords.x == target_coords.x && coords.y == target_coords.y) {
+        over = true;
+        if(self.target != touchable.target) {
+          $('#container').style.cursor = 'pointer';
+          if(self.target != null) self.target.mouseOut();
+          self.target = touchable.target;
+          self.target.mouseOver();
+        }
+      }
     });
+
+    if(!over && self.target != null) {
+      $('#container').style.cursor = 'default';
+      self.target.mouseOut();
+      self.target = null;
+    }
   });
 
-  self.registerTouchable = function(identifier, coord_tl, coord_br) {
-    touchables[identifier] = [coord_tl, coord_br];
+  self.registerTouchable = function(target, coords) {
+    touchables.push({target: target, coords: coords});
   }
 
   self.getTouchables = function() {

@@ -1,9 +1,13 @@
 Light = function(canvas, x, y) {
   var self = {};
+  self.x = x;
+  self.y = y;
+
   var radius = 15;
   var canvas = null;
 
   self.init = function() {
+    Mouse.registerTouchable(self, { x: self.x, y: self.y });
     canvas = $("#lights").getContext('2d');
     canvas.beginPath();
     canvas.setLineDash([0]);
@@ -16,6 +20,26 @@ Light = function(canvas, x, y) {
     return self;
   }
 
+  self.mouseOver = function() {
+    canvas.beginPath();
+    canvas.arc(x, y, radius, 0, 2 * Math.PI, false);
+    canvas.fillStyle = 'rgba(252, 237, 188, 1)';
+    canvas.fill();
+    canvas.lineWidth = 6;
+    canvas.strokeStyle = '#3a1f0a';
+    canvas.stroke();
+  }
+
+  self.mouseOut = function() {
+    canvas.beginPath();
+    canvas.arc(x, y, radius, 0, 2 * Math.PI, false);
+    canvas.fillStyle = 'rgba(147, 95, 48, 1)';
+    canvas.fill();
+    canvas.lineWidth = 6;
+    canvas.strokeStyle = '#3a1f0a';
+    canvas.stroke();
+  }
+
   self.glow = function(glow_speed) {
     canvas.beginPath();
     canvas.arc(x, y, radius, 0, 2 * Math.PI, false);
@@ -25,18 +49,18 @@ Light = function(canvas, x, y) {
     canvas.strokeStyle = '#3a1f0a';
     canvas.stroke();
     glow_interval = 40;
-    glow_speed = glow_speed ? glow_speed : 0.1;
+    glow_speed = glow_speed ? glow_speed : 1;
     self.alpha = 0;
     self.glow_int = setInterval(function() {
       canvas.beginPath();
       canvas.arc(x, y, radius, 0, 2 * Math.PI, false);
-      canvas.fillStyle = 'rgba(147, 95, 48, '+self.alpha+')';
+      canvas.fillStyle = 'rgba(147, 95, 48, '+self.alpha/10+')';
       canvas.fill();
       canvas.lineWidth = 6;
       canvas.strokeStyle = '#3a1f0a';
       canvas.stroke();
       self.alpha += glow_speed;
-      if(self.alpha > 10) {
+      if(Math.round(self.alpha) == 10) {
         clearInterval(self.glow_int);
       }
     }, glow_interval);
