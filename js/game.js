@@ -8,6 +8,7 @@ Game = (function() {
   self.right_lights = [];
   self.left_lights = [];
   self.path = [];
+  self.availability = [];
 
   self.settings = {
     name: 'Pinball Recall',
@@ -42,6 +43,15 @@ Game = (function() {
   buildGame = function() {
     self.ball = new Ball();
     animate();
+
+    // Add availability
+    for(x = 0; x < board.cols; x++) {
+      for(y = 0; y < board.rows; y++) {
+        a_string  = x + "_" + y;
+        self.availability.push(a_string);
+      }
+    }
+    console.log("Available Coords", self.availability);
 
     // Background
     var img = new Image();
@@ -103,6 +113,7 @@ Game = (function() {
     ];
 
     self.path = levels[Math.randomInt(levels.length)];
+    updateAvailableCoords();
   }
 
   // drawPath = function() {
@@ -229,6 +240,10 @@ Game = (function() {
   }
 
   drawPaddles = function() {
+
+    show_time = 1; // 1600
+    hide_time = 4000;
+
     setTimeout(function() {
       total = self.path.length;
       distractions = 4;
@@ -255,18 +270,21 @@ Game = (function() {
       }
 
       // Draw distractions
-      // for(i = total; i < total + distractions; i++) {
-      //   direction = Math.randomInt(2);
-      //   coords = randomCoord();
-      //   self.paddles['paddle_' + i] = new Paddle(canvas, direction, coords.x, coords.y);
-      // }
-    }, 1); //1600
+      for(i = total; i < total + distractions; i++) {
+        direction = Math.randomInt(2);
+        //coords = randomCoord();
+        available = self.availability.splice(Math.randomInt(self.availability.length), 1);
+        console.log(available);
+        coords = available.first().split('_');
+        self.paddles['paddle_' + i] = new Paddle(canvas, direction, coords.first(), coords.last());
+      }
+    }, show_time);
 
     // setTimeout(function() {
     //   for (i in self.paddles) {
     //     self.paddles[i].hide();
     //   }
-    // }, 4000);
+    // }, hide_time);
   }
 
   showLights = function(light_set, interval) {
@@ -279,6 +297,49 @@ Game = (function() {
         clearInterval(self.lights_int)
       }
     }, interval);
+  }
+
+  getDirection = function(start, end) {
+    if(start < end) {
+      dir = 1;
+    } else if(start > end) {
+      dir = -1;
+    } else if(start == end) {
+      dir = 0;
+    }
+    return dir;
+  }
+
+  updateAvailableCoords = function() {
+    // Run throgh path and define cells that are off limits
+    self.path.each(function(obj, i) {
+      if(i == self.path.length-1) return;
+
+      next_obj      = self.path[i+1];
+      next_coord    = next_obj ? pixelsToCoords(next_obj.x, next_obj.y) : null;
+      current_coord = pixelsToCoords(obj.x, obj.y);
+
+      x_dir = getDirection(current_coord.x, next_coord.x);
+      y_dir = getDirection(current_coord.y, next_coord.y);
+
+      if (x_dir != 0) {
+        while(current_coord.x != next_coord.x) {
+          current_coord.x = current_coord.x += x_dir;
+          current_pos = current_coord.x + "_" + current_coord.y;
+          console.log("remove", current_pos);
+          index = self.availability.indexOf(current_pos);
+          self.availability.splice(index, 1);
+        }
+      } else if (y_dir != 0) {
+        while(current_coord.y != next_coord.y) {
+          current_coord.y = current_coord.y += y_dir;
+          current_pos = current_coord.x + "_" + current_coord.y;
+          console.log("remove", current_pos);
+          index = self.availability.indexOf(current_pos);
+          self.availability.splice(index, 1);
+        }
+      }
+    });
   }
 
   randomCoord = function() {

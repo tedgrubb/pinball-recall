@@ -1,3 +1,5 @@
+// TODO: Factor in y scroll offset
+
 Mouse = (function() {
   // Public
   self = {};

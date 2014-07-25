@@ -40,7 +40,7 @@ Object.prototype.each = function(callback) {
 Array.prototype.each = function(callback) {
   var size = this.length;
   for(var i = 0; i < size; i++) {
-    callback(this[i]);
+    callback(this[i], i);
   }
 }
 
